@@ -1,6 +1,6 @@
 #!/bin/sh
 
-mvn package
+mvn clean package
 
 mkdir -p /opt/cassandana
 cp -f ./target/cassandana-jar-with-dependencies.jar /opt/cassandana/cassandana.jar

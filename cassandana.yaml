@@ -15,11 +15,6 @@ websocket:
     host: 0.0.0.0  
     port: 8080
 
-http:
-    enabled: no
-    host: 0.0.0.0
-    port: 8083
-
 
 ssl:
     enabled: no
@@ -32,23 +27,16 @@ wss:
     host: 0.0.0.0
     port: 8084  
 
-
-https:
-    enabled: no
-    host: 0.0.0.0
-    port: 8084
     
     
 cert:
     provider: JDK
-    key_manager_password: 123456
-    key_store_password: 123456
+    key_manager_password: YOUR_PASSWORD
+    key_store_password: YOUR_PASSWORD
     key_store_type: jks 
     path: cert/cassandana.jks
     client_auth: no
     
-
-
 
 
 # permit: permit all users to perform a task
@@ -61,12 +49,12 @@ security:
     
 
 
-#false to accept only client connetions with credentials
-#true to accept client connection without credentails, validating only the one that provides
+#no to accept only client connetions with credentials
+#yes to accept client connection without credentails, validating only the one that provides
 allow_anonymous: yes
 
-#false to prohibit clients from connecting without a clientid.
-#true to allow clients to connect without a clientid. One will be generated for them.
+#no to prohibit clients from connecting without a clientid.
+#yes to allow clients to connect without a clientid. One will be generated for them.
 allow_zero_byte_client_id: no
 
 
