@@ -4,7 +4,7 @@ cassandan is an open source MQTT message broker which is entirely written in Jav
 
 
 # How to install
-Cassandana is cross-platform, which could be deployed on Linux, FreeBSD, Mac and Windows. I
+Cassandana is cross-platform, which could be deployed on Linux, FreeBSD, Mac and Windows.
 
 ## Build From Source
 Download source code from GitHub by following command:
