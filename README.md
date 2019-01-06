@@ -8,31 +8,50 @@ Cassandana is cross-platform, which could be deployed on Linux, FreeBSD, Mac and
 
 ## Build From Source
 Download source code from GitHub by following command:
-``git clone https://github.com/mtsoleimani/cassandana.git ``
+```
+git clone https://github.com/mtsoleimani/cassandana.git 
+```
+
 the go to the downloaded directory 
-``cd cassandana ``
+```
+cd cassandana 
+```
+
 cassandana uses maven to build:
-``mvn clean package``
+```
+mvn clean package
+```
 jar file will be created in a new directory is called *target*.
 
 ## Installation
 After building the jar file from source code or grabbing it from [release](https://github.com/mtsoleimani/cassandana/releases), follow the instruction below:
-`` mkdir -p /opt/cassandana``
+```
+mkdir -p /opt/cassandana
+```
 in case of building from source code:
-``cp -f ./target/cassandana-jar-with-dependencies.jar /opt/cassandana/cassandana.jar``
+```
+cp -f ./target/cassandana-jar-with-dependencies.jar /opt/cassandana/cassandana.jar
+```
 if you downloaded jar file from [release](https://github.com/mtsoleimani/cassandana/releases):
-``cp ./cassandana-v0.0.1-ALPHA.jar /opt/cassandana/cassandana.jar``
+```
+cp ./cassandana-v0.0.1-ALPHA.jar /opt/cassandana/cassandana.jar
+```
 copy YAML file (cassandana's configuration file) to /opt/cassandana/
-``cp cassandana.yaml /opt/cassandana/cassandana.yaml``
+```
+cp cassandana.yaml /opt/cassandana/cassandana.yaml
+```
 
 ## Init.d script
 To make Cassandana runs at boot time in Debian use initd script from *script* directory which is provided in source code
-``cp ./script/initd /etc/init.d/cassandana``
-``chmod 755 /etc/init.d/cassandana``
-``update-rc.d cassandana defaults``
+```cp ./script/initd /etc/init.d/cassandana
+chmod 755 /etc/init.d/cassandana
+update-rc.d cassandana defaults
+```
 tested in debian jessie and stretch
 To start|stop|restart use the following command
-``/etc/init.d/cassandana start|stop\restart``
+```
+/etc/init.d/cassandana start|stop\restart
+```
 
 ## Configuration
 The configuration file is written in YAML. 
