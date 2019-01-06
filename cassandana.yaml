@@ -1,0 +1,112 @@
+
+
+# number of process, recommended to equal number of cpu cores, 0 means all available cpu cores
+threads: 0
+
+
+
+# mqtt server 
+host: 0.0.0.0
+port: 1883
+
+    
+websocket:
+    enabled: yes  
+    host: 0.0.0.0  
+    port: 8080
+
+http:
+    enabled: no
+    host: 0.0.0.0
+    port: 8083
+
+
+ssl:
+    enabled: no
+    host: 0.0.0.0
+    port: 1884  
+
+
+wss:
+    enabled: no
+    host: 0.0.0.0
+    port: 8084  
+
+
+https:
+    enabled: no
+    host: 0.0.0.0
+    port: 8084
+    
+    
+cert:
+    provider: JDK
+    key_manager_password: 123456
+    key_store_password: 123456
+    key_store_type: jks 
+    path: cert/cassandana.jks
+    client_auth: no
+    
+
+
+
+
+# permit: permit all users to perform a task
+# deny: deny all users to perform a task
+# database: use database to ask
+security:
+    authentication: database
+    acl: permit
+         
+    
+
+
+#false to accept only client connetions with credentials
+#true to accept client connection without credentails, validating only the one that provides
+allow_anonymous: yes
+
+#false to prohibit clients from connecting without a clientid.
+#true to allow clients to connect without a clientid. One will be generated for them.
+allow_zero_byte_client_id: no
+
+
+
+reauthorize_subscriptions_on_connect: yes
+
+max_message_bytes: 8092
+
+
+# engine can be mysql, postgres or monogdb
+database:
+    engine: mongodb
+    host: 127.0.0.1
+    port: 27017
+    username: 
+    password: 
+    name: cassandana
+
+
+
+epoll_enabled: no
+ 
+tcp:
+    so_backlog: 128
+    so_reuse_address: yes
+    tcp_nodelay: yes
+    so_keepalive: yes
+    timeout_seconds: 10
+    
+    
+
+bugsnag: 
+    enabled: no
+    token: 
+        
+    
+librato:
+    enabled: no
+    email:
+    token:
+    source:
+    
+    

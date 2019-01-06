@@ -1,0 +1,11 @@
+#!/bin/sh
+
+mvn package
+
+mkdir -p /opt/cassandana
+cp -f ./target/cassandana-jar-with-dependencies.jar /opt/cassandana/cassandana.jar
+cp cassandana.yaml /opt/cassandana/cassandana.yaml
+cp ./script/initd /etc/init.d/cassandana
+chmod 755 /etc/init.d/cassandana
+update-rc.d cassandana defaults
+
