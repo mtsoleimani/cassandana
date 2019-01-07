@@ -198,7 +198,7 @@ Sample body:
 
 Returns 2xx if successful 
 ```
-if asks for publishing ``acl`` should be set ``pub`` otherwise in case of subscription set it to ``sub``
+if asks for publishing ``acl`` should be set to ``pub`` otherwise in case of subscription set it to ``sub``
 **Note:** There is a sample HTTP server written in NodeJS in *example* directory.
 
 # The origin of the name
