@@ -18,6 +18,7 @@ import io.cassandana.interception.BrokerInterceptor;
 import io.cassandana.interception.InterceptHandler;
 import io.netty.handler.codec.mqtt.MqttPublishMessage;
 import io.cassandana.persistence.MemorySubscriptionsRepository;
+import io.cassandana.silo.Silo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +41,13 @@ public class Server {
     private volatile boolean initialized;
     private PostOffice dispatcher;
     private BrokerInterceptor interceptor;
+    
+    private Silo silo;
 
     public static void main(String[] args) throws Exception {
         final Server server = new Server();
         server.startServer();
-        System.out.println("Server started, version 0.0.1-ALPHA");
+        System.out.println("Server started, version 0.0.2-ALPHA");
         //Bind a shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(server::stopServer));
     }
@@ -116,26 +119,13 @@ public class Server {
         subscriptionsRepository = new MemorySubscriptionsRepository();
         queueRepository = new MemoryQueueRepository();
         retainedRepository = new MemoryRetainedRepository();
-        
-        /*final String persistencePath = config.getProperty(BrokerConstants.PERSISTENT_STORE_PROPERTY_NAME);
-        LOG.debug("Configuring Using persistent store file, path: {}", persistencePath);
-        if (persistencePath != null && !persistencePath.isEmpty()) {/
-            LOG.trace("Configuring H2 subscriptions store to {}", persistencePath);
-            h2Builder = new H2Builder(config, scheduler).initStore();
-            subscriptionsRepository = h2Builder.subscriptionsRepository();
-            queueRepository = h2Builder.queueRepository();
-            retainedRepository = h2Builder.retainedRepository();
-        } else {
-            LOG.trace("Configuring in-memory subscriptions store");
-            subscriptionsRepository = new MemorySubscriptionsRepository();
-            queueRepository = new MemoryQueueRepository();
-            retainedRepository = new MemoryRetainedRepository();
-        }*/
 
+        silo = (config.siloEnabled)? Silo.getInstance(config) : null;
+        
         ISubscriptionsDirectory subscriptions = new CTrieSubscriptionDirectory();
         subscriptions.init(subscriptionsRepository);
         SessionRegistry sessions = new SessionRegistry(subscriptions, queueRepository);
-        dispatcher = new PostOffice(subscriptions, authorizatorPolicy, retainedRepository, sessions, interceptor);
+        dispatcher = new PostOffice(subscriptions, authorizatorPolicy, retainedRepository, sessions, interceptor, silo);
         final BrokerConfiguration brokerConfig = new BrokerConfiguration(config);
         MQTTConnectionFactory connectionFactory = new MQTTConnectionFactory(brokerConfig, authenticator, sessions,
                                                                             dispatcher);
@@ -148,38 +138,16 @@ public class Server {
         LOG.info("Cassandana integration has been started successfully in {} ms", startTime);
         initialized = true;
     }
-
+    
     private IAuthorizatorPolicy initializeAuthorizatorPolicy(IAuthorizatorPolicy authorizatorPolicy, Config conf) {
 
         LOG.debug("Configuring MQTT authorizator policy");
-        /*String authorizatorClassName = props.getProperty(BrokerConstants.AUTHORIZATOR_CLASS_NAME, "");
-        if (authorizatorPolicy == null && !authorizatorClassName.isEmpty()) {
-            authorizatorPolicy = loadClass(authorizatorClassName, IAuthorizatorPolicy.class, IConfig.class, props);
-        }
-
-        if (authorizatorPolicy == null) {
-            String aclFilePath = props.getProperty(BrokerConstants.ACL_FILE_PROPERTY_NAME, "");
-            if (aclFilePath != null && !aclFilePath.isEmpty()) {
-                authorizatorPolicy = new DenyAllAuthorizatorPolicy();
-                try {
-                    LOG.info("Parsing ACL file. Path = {}", aclFilePath);
-                    IResourceLoader resourceLoader = props.getResourceLoader();
-                    authorizatorPolicy = ACLFileParser.parse(resourceLoader.loadResource(aclFilePath));
-                } catch (ParseException pex) {
-                    LOG.error("Unable to parse ACL file. path=" + aclFilePath, pex);
-                }
-            } else {
-                authorizatorPolicy = new PermitAllAuthorizatorPolicy();
-            }
-            LOG.info("Authorizator policy {} instance will be used", authorizatorPolicy.getClass().getName());
-        }
-        return authorizatorPolicy;
-        */
-        
         if(conf.aclProvider == SecurityProvider.DENY)
         	return new DenyAllAuthorizatorPolicy();
         else if(conf.aclProvider == SecurityProvider.DATABASE)
         	return new DatabaseAuthorizator(conf);
+        else if(conf.aclProvider == SecurityProvider.HTTP)
+        	return new HttpAuthorizator(conf);
         else //if(conf.aclProvider == SecurityProvider.PERMIT)
         	return new PermitAllAuthorizatorPolicy();
         
@@ -188,29 +156,12 @@ public class Server {
     private IAuthenticator initializeAuthenticator(IAuthenticator authenticator, Config conf) {
 
         LOG.debug("Configuring MQTT authenticator");
-        /*String authenticatorClassName = props.getProperty(BrokerConstants.AUTHENTICATOR_CLASS_NAME, "");
-
-        if (authenticator == null && !authenticatorClassName.isEmpty()) {
-            authenticator = loadClass(authenticatorClassName, IAuthenticator.class, IConfig.class, props);
-        }
-
-        IResourceLoader resourceLoader = props.getResourceLoader();
-        if (authenticator == null) {
-            String passwdPath = props.getProperty(BrokerConstants.PASSWORD_FILE_PROPERTY_NAME, "");
-            if (passwdPath.isEmpty()) {
-                authenticator = new AcceptAllAuthenticator();
-            } else {
-                authenticator = new ResourceAuthenticator(resourceLoader, passwdPath);
-            }
-            LOG.info("An {} authenticator instance will be used", authenticator.getClass().getName());
-        }
-        return authenticator;
-        */
-        
         if(conf.authProvider == SecurityProvider.DENY)
         	return new RejectAllAuthenticator();
         else if(conf.authProvider == SecurityProvider.DATABASE)
         	return new DatabaseAuthenticator(conf);
+        else if(conf.authProvider == SecurityProvider.HTTP)
+        	return new HttpAuthenticator(conf);
         else //if(conf.aclProvider == SecurityProvider.PERMIT)
         	return new AcceptAllAuthenticator();
         
@@ -231,42 +182,6 @@ public class Server {
         interceptor = new BrokerInterceptor(conf, observers);
     }
 
-//    @SuppressWarnings("unchecked")
-//    private <T, U> T loadClass(String className, Class<T> intrface, Class<U> constructorArgClass, U props) {
-//        T instance = null;
-//        try {
-//            // check if constructor with constructor arg class parameter
-//            // exists
-//            LOG.info("Invoking constructor with {} argument. ClassName={}, interfaceName={}",
-//                     constructorArgClass.getName(), className, intrface.getName());
-//            instance = this.getClass().getClassLoader()
-//                .loadClass(className)
-//                .asSubclass(intrface)
-//                .getConstructor(constructorArgClass)
-//                .newInstance(props);
-//        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
-//            LOG.warn("Unable to invoke constructor with {} argument. ClassName={}, interfaceName={}, cause={}, " +
-//                     "errorMessage={}", constructorArgClass.getName(), className, intrface.getName(), ex.getCause(),
-//                     ex.getMessage());
-//            return null;
-//        } catch (NoSuchMethodException | InvocationTargetException e) {
-//            try {
-//                LOG.info("Invoking default constructor. ClassName={}, interfaceName={}", className, intrface.getName());
-//                // fallback to default constructor
-//                instance = this.getClass().getClassLoader()
-//                    .loadClass(className)
-//                    .asSubclass(intrface)
-//                    .getDeclaredConstructor().newInstance();
-//            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException |
-//                NoSuchMethodException | InvocationTargetException ex) {
-//                LOG.error("Unable to invoke default constructor. ClassName={}, interfaceName={}, cause={}, " +
-//                          "errorMessage={}", className, intrface.getName(), ex.getCause(), ex.getMessage());
-//                return null;
-//            }
-//        }
-//
-//        return instance;
-//    }
 
     /**
      * Use the broker to publish a message. It's intended for embedding applications. It can be used
@@ -296,23 +211,12 @@ public class Server {
         // calling shutdown() does not actually stop tasks that are not cancelled,
         // and SessionsRepository does not stop its tasks. Thus shutdownNow().
         scheduler.shutdownNow();
+        
+        if(silo != null)
+        	silo.shutdown();
 
         LOG.info("Moquette integration has been stopped.");
     }
-
-    /**
-     * SPI method used by Broker embedded applications to get list of subscribers. Returns null if
-     * the broker is not started.
-     *
-     * @return list of subscriptions.
-     */
-// TODO reimplement this
-//    public List<Subscription> getSubscriptions() {
-//        if (m_processorBootstrapper == null) {
-//            return null;
-//        }
-//        return this.subscriptionsStore.listAllSubscriptions();
-//    }
 
     /**
      * SPI method used by Broker embedded applications to add intercept handlers.

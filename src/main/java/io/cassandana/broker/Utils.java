@@ -1,17 +1,11 @@
 /*
- * Copyright (c) 2012-2018 The original author or authors
- * ------------------------------------------------------
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Apache License v2.0 which accompanies this distribution.
+ *  Copyright 2019 Mohammad Taqi Soleimani
  *
- * The Eclipse Public License is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * The Apache License v2.0 is available at
- * http://www.opensource.org/licenses/apache2.0.php
- *
- * You may elect to redistribute this code under either of these licenses.
+ *  http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package io.cassandana.broker;
@@ -19,6 +13,9 @@ package io.cassandana.broker;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.mqtt.MqttMessage;
 import io.netty.handler.codec.mqtt.MqttMessageIdVariableHeader;
+
+import java.security.MessageDigest;
+import java.util.Formatter;
 import java.util.Map;
 
 /**
@@ -47,5 +44,33 @@ public final class Utils {
     }
 
     private Utils() {
+    	
     }
+    
+    
+    public static String getSha256(byte[] password) {
+	    String digest = "";
+	    try {
+	        MessageDigest crypt = MessageDigest.getInstance("SHA-256");
+	        crypt.reset();
+	        crypt.update(password);
+	        digest = byteToHex(crypt.digest());
+	        
+	    } catch(Exception e) {
+	    	e.printStackTrace();
+	        return null;
+	    }
+	    return digest;
+	}
+    
+    public static String byteToHex(final byte[] hash) {
+	    Formatter formatter = new Formatter();
+	    for (byte b : hash) {
+	        formatter.format("%02x", b);
+	    }
+	    
+	    String result = formatter.toString();
+	    formatter.close();
+	    return result;
+	}
 }

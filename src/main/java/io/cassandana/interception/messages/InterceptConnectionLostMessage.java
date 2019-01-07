@@ -1,19 +1,12 @@
 /*
- * Copyright (c) 2012-2018 The original author or authors
- * ------------------------------------------------------
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Apache License v2.0 which accompanies this distribution.
+ *  Copyright 2019 Mohammad Taqi Soleimani
  *
- * The Eclipse Public License is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * The Apache License v2.0 is available at
- * http://www.opensource.org/licenses/apache2.0.php
- *
- * You may elect to redistribute this code under either of these licenses.
+ *  http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package io.cassandana.interception.messages;
 
 public class InterceptConnectionLostMessage implements InterceptMessage {

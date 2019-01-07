@@ -7,7 +7,6 @@
  *
  *  http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package io.cassandana.broker;
 
 import java.io.File;

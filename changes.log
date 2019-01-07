@@ -1,0 +1,12 @@
+Version 0.0.2-ALPHA:
+	Added HTTP authentication and authorization
+	Integrated Silo (MQTT Message archiver) (https://github.com/mtsoleimani/silo)
+	
+
+Version 0.0.1-ALPHA:
+	Forked from moquette and code cleanup
+	Dropped support for H2
+	Dropped support for bugsnag, librato and metrics
+	Added supoort for mysql, postgres and mongodb to authenticate and authorizate users
+	Added YAML configuration support
+

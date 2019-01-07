@@ -8,11 +8,9 @@
  *  http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package io.cassandana.broker;
+package io.cassandana.silo.scheduler;
 
-import java.util.Queue;
+public interface IScheduler {
 
-public interface IQueueRepository {
-
-    Queue<SessionRegistry.EnqueuedMessage> createQueue(String cli, boolean clean);
+	public void onTimer();
 }

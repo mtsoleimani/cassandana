@@ -13,6 +13,7 @@ package io.cassandana.database;
 import java.util.List;
 
 import io.cassandana.broker.security.AclEntity;
+import io.cassandana.silo.SiloMessage;
 
 public interface IDatabaseOperation {
 
@@ -31,5 +32,5 @@ public interface IDatabaseOperation {
 	
 	public List<AclEntity> getAcl(String topic);
 	
-	
+	public void bulkInsert(List<SiloMessage> list);
 }

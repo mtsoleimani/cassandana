@@ -42,11 +42,16 @@ cert:
 # permit: permit all users to perform a task
 # deny: deny all users to perform a task
 # database: use database to ask
+# http: use http rest api to ask
 security:
-    authentication: database
-    acl: permit
-         
+    authentication: http
+    acl: http
     
+    # if REST API will be used as auth/acl backend
+    auth_url: http://127.0.0.1:9999/mqtt/auth 
+    acl_url: http://127.0.0.1:9999/mqtt/acl
+    
+
 
 
 #no to accept only client connetions with credentials
@@ -84,17 +89,14 @@ tcp:
     so_keepalive: yes
     timeout_seconds: 10
     
-    
 
-bugsnag: 
+# MQTT Message archiver
+# Silo store all messages in bulk mode
+# interval in second means how many seconds it should wait to store messages in queue
+# count means on how many messages count, it should run archive messages phase
+silo:
     enabled: no
-    token: 
-        
-    
-librato:
-    enabled: no
-    email:
-    token:
-    source:
-    
-    
+    interval: 5
+    count: 500
+
+

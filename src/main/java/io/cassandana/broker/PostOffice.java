@@ -1,18 +1,13 @@
 /*
- * Copyright (c) 2012-2018 The original author or authors
- * ------------------------------------------------------
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Apache License v2.0 which accompanies this distribution.
+ *  Copyright 2019 Mohammad Taqi Soleimani
  *
- * The Eclipse Public License is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * The Apache License v2.0 is available at
- * http://www.opensource.org/licenses/apache2.0.php
- *
- * You may elect to redistribute this code under either of these licenses.
+ *  http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package io.cassandana.broker;
 
 import io.cassandana.broker.security.IAuthorizatorPolicy;
@@ -20,6 +15,7 @@ import io.cassandana.broker.subscriptions.ISubscriptionsDirectory;
 import io.cassandana.broker.subscriptions.Subscription;
 import io.cassandana.broker.subscriptions.Topic;
 import io.cassandana.interception.BrokerInterceptor;
+import io.cassandana.silo.Silo;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.mqtt.*;
@@ -37,6 +33,9 @@ import static io.netty.handler.codec.mqtt.MqttQoS.*;
 
 class PostOffice {
 
+	
+	private Silo silo;
+	
     private static final Logger LOG = LoggerFactory.getLogger(PostOffice.class);
 
     private final Authorizator authorizator;
@@ -46,12 +45,13 @@ class PostOffice {
     private BrokerInterceptor interceptor;
 
     PostOffice(ISubscriptionsDirectory subscriptions, IAuthorizatorPolicy authorizatorPolicy,
-               IRetainedRepository retainedRepository, SessionRegistry sessionRegistry, BrokerInterceptor interceptor) {
+               IRetainedRepository retainedRepository, SessionRegistry sessionRegistry, BrokerInterceptor interceptor, Silo silo) {
         this.authorizator = new Authorizator(authorizatorPolicy);
         this.subscriptions = subscriptions;
         this.retainedRepository = retainedRepository;
         this.sessionRegistry = sessionRegistry;
         this.interceptor = interceptor;
+        this.silo = silo;
     }
 
     public void init(SessionRegistry sessionRegistry) {
@@ -166,6 +166,10 @@ class PostOffice {
             LOG.error("MQTT client: {} is not authorized to publish on topic: {}", clientID, topic);
             return;
         }
+        
+        if(silo != null)
+        	silo.put(topic, username, payload, AT_MOST_ONCE);
+        
         publish2Subscribers(payload, topic, AT_MOST_ONCE);
 
         if (retain) {
@@ -191,6 +195,9 @@ class PostOffice {
             return;
         }
 
+        if(silo != null)
+        	silo.put(topic, username, payload, AT_LEAST_ONCE);
+        
         publish2Subscribers(payload, topic, AT_LEAST_ONCE);
 
         connection.sendPubAck(messageID);
@@ -249,6 +256,9 @@ class PostOffice {
             LOG.error("MQTT client is not authorized to publish on topic. CId={}, topic: {}", clientId, topic);
             return;
         }
+        
+        if(silo != null)        	
+        	silo.put(topic, username, payload, EXACTLY_ONCE);
 
         publish2Subscribers(payload, topic, EXACTLY_ONCE);
 

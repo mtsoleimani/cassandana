@@ -16,7 +16,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import io.cassandana.Constants;
 import io.cassandana.broker.security.AclEntity;
+import io.cassandana.silo.SiloMessage;
 
 
 public abstract class AbstractSqlDatabase extends DatabaseHelper implements IDatabaseOperation {
@@ -141,6 +143,48 @@ public abstract class AbstractSqlDatabase extends DatabaseHelper implements IDat
 	public List<AclEntity> getAcl(String topic) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	
+	@Override
+	public void bulkInsert(List<SiloMessage> list) {
+
+		if(list == null || list.size() == 0)
+			return;
+		
+		PreparedStatement statement = null;
+
+		try {
+			statement = connection.prepareStatement("INSERT INTO silo (" 
+					+ Constants.TOPIC + "," 
+					+ Constants.USERNAME + "," 
+					+ Constants.QOS + "," 
+					+ Constants.MESSAGE + "," 
+					+ Constants.CREATED + ") VALUES(?,?,?,?,?)");
+
+			for (SiloMessage entry : list) {
+				statement.setString(1, entry.topic);
+				statement.setString(2, entry.username);
+				statement.setInt(3, entry.qos);
+				statement.setString(4, entry.payload);
+				statement.setLong(5, entry.receivedAt);
+				statement.addBatch();
+			}
+
+			statement.executeBatch();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		} finally {
+			if (statement != null)
+				try {
+					statement.close();
+				} catch (SQLException e) {
+
+				}
+		}
+
 	}
 
 }

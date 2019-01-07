@@ -91,6 +91,12 @@
          <artifactId>netty-codec-mqtt</artifactId>
          <version>4.1.22.Final</version>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/org.json/json -->
+      <dependency>
+         <groupId>org.json</groupId>
+         <artifactId>json</artifactId>
+         <version>20180813</version>
+      </dependency>
    </dependencies>
    <build>
       <finalName>cassandana</finalName>

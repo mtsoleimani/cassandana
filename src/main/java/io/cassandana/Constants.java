@@ -72,8 +72,7 @@ public class Constants {
 
 	public static final String MAX_MESSAGE_BYTES = "max_message_bytes";
 
-	public static final String BUGSNAG = "bugsnag";
-	public static final String TOKEN = "token";
+	
 	public static final String EPOLL_ENABLED = "epoll_enabled";
 
 	public static final String SSL = "ssl";
@@ -98,14 +97,32 @@ public class Constants {
 	public static final String CLIENT_AUTH = "client_auth";
 	public static final String KEY_STORE_PASSWORD = "key_store_password";
 
-	public static final String LIBRATO = "librato";
-	public static final String EMAIL = "email";
-	public static final String SOURCE = "source";
-
 	public static final String PERMIT = "permit";
 	public static final String DENY = "deny";
 	public static final String SECURITY = "security";
 	public static final String AUTHENTICATION = "authentication";
 	public static final String ACL = "acl";
+	
+	
+	public static final String AUTH_URL = "auth_url";
+	public static final String ACL_URL = "acl_url";
+	
+	public static final String TOPIC = "topic";
+	public static final String CLIENT_ID = "clientId";
+	
+	public static final String PUB = "pub";
+	public static final String SUB = "sub";
+	
+	public static final String CREATED = "created";
+	public static final String MESSAGE = "message";
+	public static final String QOS = "qos";
+	public static final String SILO = "silo";
+	
+	public static final String INTERVAL = "interval";
+	public static final String COUNT = "count";
+	
+	
+	public static final int DEFAULT_SILO_COUNT = 100;
+	public static final int DEFAULT_SILO_INTERVAL = 5;
 
 }

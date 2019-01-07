@@ -8,12 +8,12 @@
  *  http://www.apache.org/licenses/LICENSE-2.0
  */
 
-
 package io.cassandana.broker.security;
 
 public enum SecurityProvider {
 
 	PERMIT,
 	DENY,
-	DATABASE
+	DATABASE,
+	HTTP
 }

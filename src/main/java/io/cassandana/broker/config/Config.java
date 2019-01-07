@@ -84,8 +84,6 @@ public class Config {
 				reauthorizeSubscriptionsOnConnect = (boolean) parser.get(Constants.REAUTHORIZE_SUBSCRIPTIONS_ON_CONNECT);
 			
 			
-			
-			
 			if(parser.get(Constants.EPOLL_ENABLED) != null)
 				epollEnabled = (boolean) parser.get(Constants.EPOLL_ENABLED);
 			
@@ -204,29 +202,6 @@ public class Config {
 			}
 			
 			
-			
-			
-			Map<String, Object> bugsnag = (Map<String, Object>) parser.get(Constants.BUGSNAG);
-			if(bugsnag != null) {
-				
-				if(bugsnag.get(Constants.ENABLED) != null)
-					bugsnagEnabled = (boolean) bugsnag.get(Constants.ENABLED);
-				else
-					bugsnagEnabled = false;
-				
-				if(bugsnag.get(Constants.TOKEN) != null)
-					bugsnagToken = bugsnag.get(Constants.TOKEN).toString();
-				else
-					bugsnagToken = null;
-				
-			} else {
-				bugsnagEnabled = false;
-				bugsnagToken = null;
-			}
-			
-			
-			
-			
 			Map<String, Object> https = (Map<String, Object>) parser.get(Constants.HTTPS);
 			if(https != null ) {
 				
@@ -272,26 +247,26 @@ public class Config {
 			}
 			
 			
-			Map<String, Object> ssl = (Map<String, Object>) parser.get(Constants.SSL);
-			if(ssl != null ) {
-				
-				if(ssl.get(Constants.HOST) == null)
-					sslHost = Constants.ALL_HOSTS;
-				else
-					sslHost = ssl.get(Constants.HOST).toString();
-				
-				sslPort = (int) ssl.get(Constants.PORT);
-				if(sslPort <= 0 || sslPort >= 65535)
-					return false;
-				
-				if(ssl.get(Constants.ENABLED) != null)
-					sslEnabled = (boolean) ssl.get(Constants.ENABLED);
-				else
-					sslEnabled = false;
-				
-			} else {
-				sslEnabled = false;
-			}
+//			Map<String, Object> ssl = (Map<String, Object>) parser.get(Constants.SSL);
+//			if(ssl != null ) {
+//				
+//				if(ssl.get(Constants.HOST) == null)
+//					sslHost = Constants.ALL_HOSTS;
+//				else
+//					sslHost = ssl.get(Constants.HOST).toString();
+//				
+//				sslPort = (int) ssl.get(Constants.PORT);
+//				if(sslPort <= 0 || sslPort >= 65535)
+//					return false;
+//				
+//				if(ssl.get(Constants.ENABLED) != null)
+//					sslEnabled = (boolean) ssl.get(Constants.ENABLED);
+//				else
+//					sslEnabled = false;
+//				
+//			} else {
+//				sslEnabled = false;
+//			}
 			
 			
 			Map<String, Object> cert = (Map<String, Object>) parser.get(Constants.CERT);
@@ -333,36 +308,6 @@ public class Config {
 			}
 			
 			
-			Map<String, Object> librato = (Map<String, Object>) parser.get(Constants.LIBRATO);
-			if(librato != null ) {
-				
-				if(librato.get(Constants.EMAIL) != null)
-					libratoEmail = Constants.EMAIL;
-				else
-					libratoEmail = null;
-				
-				if(librato.get(Constants.TOKEN) != null)
-					libratoToken = Constants.TOKEN;
-				else
-					libratoToken = null;
-				
-				if(librato.get(Constants.SOURCE) != null)
-					libratoSource = Constants.SOURCE;
-				else
-					libratoSource = null;
-				
-				if(librato.get(Constants.ENABLED) != null)
-					libratoEnabled = (boolean) librato.get(Constants.ENABLED);
-				else
-					libratoEnabled = false;
-				
-			} else {
-				libratoEnabled = false;
-			}
-			
-			
-			
-			
 			Map<String, Object> security = (Map<String, Object>) parser.get(Constants.SECURITY);
 			if(security != null ) {
 				
@@ -372,8 +317,17 @@ public class Config {
 						authProvider = SecurityProvider.DENY;
 					else if(tmp.equalsIgnoreCase(SecurityProvider.DATABASE.name()))
 						authProvider = SecurityProvider.DATABASE;
+					else if(tmp.equalsIgnoreCase(SecurityProvider.HTTP.name()))
+						authProvider = SecurityProvider.HTTP;
 					else //if(tmp.equalsIgnoreCase(SecurityProvider.PERMIT.name()))
 						authProvider = SecurityProvider.PERMIT;
+					
+					if(authProvider == SecurityProvider.HTTP) {
+						if(security.get(Constants.AUTH_URL) != null)
+							authenticationHttpUrl = security.get(Constants.AUTH_URL).toString().trim();
+						else 
+							return false;
+					}
 						
 				} else {
 					authProvider = SecurityProvider.PERMIT;
@@ -385,9 +339,18 @@ public class Config {
 						aclProvider = SecurityProvider.DENY;
 					else if(tmp.equalsIgnoreCase(SecurityProvider.DATABASE.name()))
 						aclProvider = SecurityProvider.DATABASE;
+					else if(tmp.equalsIgnoreCase(SecurityProvider.HTTP.name()))
+						aclProvider = SecurityProvider.HTTP;
 					else //if(tmp.equalsIgnoreCase(SecurityProvider.PERMIT.name()))
 						aclProvider = SecurityProvider.PERMIT;
 						
+					if(aclProvider == SecurityProvider.HTTP) {
+						if(security.get(Constants.ACL_URL) != null)
+							authorizationHttpUrl = security.get(Constants.ACL_URL).toString().trim();
+						else 
+							return false;
+					}
+					
 				} else {
 					aclProvider = SecurityProvider.PERMIT;
 				}
@@ -396,6 +359,36 @@ public class Config {
 				authProvider = SecurityProvider.PERMIT;
 				aclProvider = SecurityProvider.PERMIT;
 			}
+			
+
+			Map<String, Object> silo = (Map<String, Object>) parser.get(Constants.SILO);
+			if(silo != null ) {
+				
+				if(silo.get(Constants.ENABLED) == null)
+					siloEnabled = false;
+				else
+					siloEnabled = (boolean) silo.get(Constants.ENABLED);
+				
+				if(silo.get(Constants.INTERVAL) != null)
+					siloIntervalSeconds = (int) silo.get(Constants.INTERVAL);
+				else
+					siloIntervalSeconds = Constants.DEFAULT_SILO_INTERVAL;
+				
+				if(siloIntervalSeconds <= 0)
+					siloIntervalSeconds = Constants.DEFAULT_SILO_INTERVAL;
+				
+				if(silo.get(Constants.COUNT) != null)
+					siloBulkCount = (int) silo.get(Constants.COUNT);
+				else
+					siloBulkCount = Constants.DEFAULT_SILO_COUNT;
+				
+				if(siloBulkCount <= 0)
+					siloBulkCount = Constants.DEFAULT_SILO_COUNT;
+				
+			} else {
+				siloEnabled = false;
+			}
+			
 			
 			return true;
 			
@@ -449,8 +442,6 @@ public class Config {
 	public int socketTimeoutSeconds = Constants.DEFAULT_TIMEOUT_SECONDS;
 
 	
-	public String bugsnagToken = null;
-	public boolean bugsnagEnabled = false;
 	public boolean epollEnabled = true;
 	
 	
@@ -475,14 +466,17 @@ public class Config {
 	public boolean certClientAuth = false;
 	public String certKeyStorePassword;
 	
-
-	public boolean libratoEnabled = false;
-	public String libratoEmail;
-	public String libratoToken;
-	public String libratoSource;
-	
-	
 	
 	public SecurityProvider authProvider = SecurityProvider.PERMIT;
 	public SecurityProvider aclProvider = SecurityProvider.PERMIT;
-}
+	
+	public String authenticationHttpUrl;
+	public String authorizationHttpUrl;
+	
+	public int siloIntervalSeconds = Constants.DEFAULT_SILO_INTERVAL;
+	public int siloBulkCount = Constants.DEFAULT_SILO_COUNT;
+	public boolean siloEnabled = false;
+	
+	
+	
+}	

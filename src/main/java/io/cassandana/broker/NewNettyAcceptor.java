@@ -11,7 +11,6 @@
 package io.cassandana.broker;
 
 import io.cassandana.broker.config.Config;
-import io.cassandana.broker.metrics.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
@@ -40,7 +39,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLEngine;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static io.netty.channel.ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE;
@@ -56,8 +54,6 @@ class NewNettyAcceptor {
                 throws Exception {
             // convert the frame to a ByteBuf
             ByteBuf bb = frame.content();
-            // System.out.println("WebSocketFrameToByteBufDecoder decode - " +
-            // ByteBufUtil.hexDump(bb));
             bb.retain();
             out.add(bb);
         }
@@ -69,8 +65,6 @@ class NewNettyAcceptor {
         protected void encode(ChannelHandlerContext chc, ByteBuf bb, List<Object> out) throws Exception {
             // convert the ByteBuf to a WebSocketFrame
             BinaryWebSocketFrame result = new BinaryWebSocketFrame();
-            // System.out.println("ByteBufToWebSocketFrameEncoder encode - " +
-            // ByteBufUtil.hexDump(bb));
             result.content().writeBytes(bb);
             out.add(result);
         }
@@ -85,10 +79,6 @@ class NewNettyAcceptor {
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
-    private BytesMetricsCollector bytesMetricsCollector = new BytesMetricsCollector();
-    private MessageMetricsCollector metricsCollector = new MessageMetricsCollector();
-    private Optional<? extends ChannelInboundHandler> metrics;
-    private Optional<? extends ChannelInboundHandler> errorsCather;
 
     private int nettySoBacklog;
     private boolean nettySoReuseaddr;
@@ -122,24 +112,6 @@ class NewNettyAcceptor {
             channelClass = NioServerSocketChannel.class;
         }
 
-        final boolean useFineMetrics = conf.libratoEnabled;// props.boolProp(METRICS_ENABLE_PROPERTY_NAME, false);
-        if (useFineMetrics) {
-            DropWizardMetricsHandler metricsHandler = new DropWizardMetricsHandler();
-            metricsHandler.init(conf);
-            this.metrics = Optional.of(metricsHandler);
-        } else {
-            this.metrics = Optional.empty();
-        }
-
-        final boolean useBugSnag = conf.bugsnagEnabled;//props.boolProp(BUGSNAG_ENABLE_PROPERTY_NAME, false);
-        if (useBugSnag) {
-            BugSnagErrorsHandler bugSnagHandler = new BugSnagErrorsHandler();
-            bugSnagHandler.init(conf);
-            this.errorsCather = Optional.of(bugSnagHandler);
-        } else {
-            this.errorsCather = Optional.empty();
-        }
-        
         initializePlainTCPTransport(mqttHandler, conf);
         initializeWebSocketTransport(mqttHandler, conf);
         if (securityPortsConfigured(conf)) {
@@ -155,10 +127,6 @@ class NewNettyAcceptor {
 
     private boolean securityPortsConfigured(Config conf) {
     	return conf.wssEnabled || conf.sslEnabled;
-    	
-        /*String sslTcpPortProp = props.getProperty(BrokerConstants.SSL_PORT_PROPERTY_NAME);
-        String wssPortProp = props.getProperty(BrokerConstants.WSS_PORT_PROPERTY_NAME);
-        return sslTcpPortProp != null || wssPortProp != null;*/
     }
 
     private void initFactory(String host, int port, String protocol, final PipelineInitializer pipelieInitializer) {
@@ -190,13 +158,7 @@ class NewNettyAcceptor {
     private void initializePlainTCPTransport(NewNettyMQTTHandler handler, Config conf) {
         LOG.debug("Configuring TCP MQTT transport");
         final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
-        String host = conf.mqttServerHost;//props.getProperty(BrokerConstants.HOST_PROPERTY_NAME);
-        /*String tcpPortProp = props.getProperty(PORT_PROPERTY_NAME, DISABLED_PORT_BIND);
-        if (DISABLED_PORT_BIND.equals(tcpPortProp)) {
-            LOG.info("Property {} has been set to {}. TCP MQTT will be disabled", BrokerConstants.PORT_PROPERTY_NAME,
-                     DISABLED_PORT_BIND);
-            return;
-        }*/
+        String host = conf.mqttServerHost;
         
         int port = conf.mqttServerPort;//Integer.parseInt(tcpPortProp);
         initFactory(host, port, "TCP MQTT", new PipelineInitializer() {
@@ -213,32 +175,14 @@ class NewNettyAcceptor {
                                        NewNettyMQTTHandler handler) {
         pipeline.addFirst("idleStateHandler", new IdleStateHandler(nettyChannelTimeoutSeconds, 0, 0));
         pipeline.addAfter("idleStateHandler", "idleEventHandler", timeoutHandler);
-        // pipeline.addLast("logger", new LoggingHandler("Netty", LogLevel.ERROR));
-        if (errorsCather.isPresent()) {
-            pipeline.addLast("bugsnagCatcher", errorsCather.get());
-        }
-        pipeline.addFirst("bytemetrics", new BytesMetricsHandler(bytesMetricsCollector));
         pipeline.addLast("autoflush", new AutoFlushHandler(1, TimeUnit.SECONDS));
         pipeline.addLast("decoder", new MqttDecoder(maxBytesInMessage));
         pipeline.addLast("encoder", MqttEncoder.INSTANCE);
-        pipeline.addLast("metrics", new MessageMetricsHandler(metricsCollector));
-        pipeline.addLast("messageLogger", new MQTTMessageLogger());
-        if (metrics.isPresent()) {
-            pipeline.addLast("wizardMetrics", metrics.get());
-        }
         pipeline.addLast("handler", handler);
     }
 
     private void initializeWebSocketTransport(final NewNettyMQTTHandler handler, Config conf) {
         LOG.debug("Configuring Websocket MQTT transport");
-        /*String webSocketPortProp = props.getProperty(WEB_SOCKET_PORT_PROPERTY_NAME, DISABLED_PORT_BIND);
-        if (DISABLED_PORT_BIND.equals(webSocketPortProp)) {
-            // Do nothing no WebSocket configured
-            LOG.info("Property {} has been setted to {}. Websocket MQTT will be disabled",
-                     BrokerConstants.WEB_SOCKET_PORT_PROPERTY_NAME, DISABLED_PORT_BIND);
-            return;
-        }*/
-        
         if(!conf.websocketEnabled) {
         	return;
         }
@@ -247,7 +191,7 @@ class NewNettyAcceptor {
 
         final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
 
-        String host = conf.websocketHost;// props.getProperty(BrokerConstants.HOST_PROPERTY_NAME);
+        String host = conf.websocketHost;
         initFactory(host, port, "Websocket MQTT", new PipelineInitializer() {
 
             @Override
@@ -266,24 +210,15 @@ class NewNettyAcceptor {
 
     private void initializeSSLTCPTransport(NewNettyMQTTHandler handler, Config conf, SslContext sslContext) {
         LOG.debug("Configuring SSL MQTT transport");
-        /*String sslPortProp = props.getProperty(SSL_PORT_PROPERTY_NAME, DISABLED_PORT_BIND);
-        if (DISABLED_PORT_BIND.equals(sslPortProp)) {
-            // Do nothing no SSL configured
-            LOG.info("Property {} has been set to {}. SSL MQTT will be disabled",
-                     BrokerConstants.SSL_PORT_PROPERTY_NAME, DISABLED_PORT_BIND);
-            return;
-        }*/
-        
         if(!conf.sslEnabled) {
         	return;
         }
 
-        int sslPort = conf.sslPort;// Integer.parseInt(sslPortProp);
+        int sslPort = conf.sslPort;
         LOG.debug("Starting SSL on port {}", sslPort);
 
         final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
-        String host = conf.sslHost;// props.getProperty(BrokerConstants.HOST_PROPERTY_NAME);
-//        String sNeedsClientAuth = props.getProperty(BrokerConstants.NEED_CLIENT_AUTH, "false");
+        String host = conf.sslHost;
         final boolean needsClientAuth = conf.certClientAuth;// Boolean.valueOf(sNeedsClientAuth);
         initFactory(host, sslPort, "SSL MQTT", new PipelineInitializer() {
 
@@ -298,23 +233,14 @@ class NewNettyAcceptor {
 
     private void initializeWSSTransport(NewNettyMQTTHandler handler, Config conf, SslContext sslContext) {
         LOG.debug("Configuring secure websocket MQTT transport");
-        /*String sslPortProp = props.getProperty(WSS_PORT_PROPERTY_NAME, DISABLED_PORT_BIND);
-        if (DISABLED_PORT_BIND.equals(sslPortProp)) {
-            // Do nothing no SSL configured
-            LOG.info("Property {} has been set to {}. Secure websocket MQTT will be disabled",
-                    BrokerConstants.WSS_PORT_PROPERTY_NAME, DISABLED_PORT_BIND);
-            return;
-        }*/
-        
         if(!conf.wssEnabled) {
         	return;
         }
         
-        int sslPort = conf.wssPort;// Integer.parseInt(sslPortProp);
+        int sslPort = conf.wssPort;
         final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
-        String host = conf.wssHost;// props.getProperty(BrokerConstants.HOST_PROPERTY_NAME);
-        //String sNeedsClientAuth = props.getProperty(BrokerConstants.NEED_CLIENT_AUTH, "false");
-        final boolean needsClientAuth = conf.certClientAuth;// Boolean.valueOf(sNeedsClientAuth);
+        String host = conf.wssHost;
+        final boolean needsClientAuth = conf.certClientAuth;
         initFactory(host, sslPort, "Secure websocket", new PipelineInitializer() {
 
             @Override
@@ -365,11 +291,6 @@ class NewNettyAcceptor {
             LOG.warn("Forcing shutdown of boss event loop...");
             bossGroup.shutdownGracefully(0L, 0L, TimeUnit.MILLISECONDS);
         }
-
-        MessageMetrics metrics = metricsCollector.computeMetrics();
-        BytesMetrics bytesMetrics = bytesMetricsCollector.computeMetrics();
-        LOG.info("Metrics messages[read={}, write={}] bytes[read={}, write={}]", metrics.messagesRead(),
-                 metrics.messagesWrote(), bytesMetrics.readBytes(), bytesMetrics.wroteBytes());
     }
 
     private ChannelHandler createSslHandler(SocketChannel channel, SslContext sslContext, boolean needsClientAuth) {

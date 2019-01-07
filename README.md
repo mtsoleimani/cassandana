@@ -1,7 +1,17 @@
-
 # Cassandana
-Cassandana is an open source MQTT message broker which is entirely written in Java. This project began its life as a fork of [Moquette](http://andsel.github.io/moquette/) , and later underwent some cleanup, optimization and adding extra features. Now it’s ready to work as an enterprise message broker.
+Cassandana is an open source MQTT message broker which is entirely written in Java. This project began its life as a fork of [Moquette](https://github.com/andsel/moquette) , and later underwent some cleanup, optimization and adding extra features. Now it’s ready to work as an enterprise message broker.
 
+
+# Features
+
+ - MQTT compliant broker.
+ - Supports QoS 0, QoS 1 and QoS 2
+ - TLS (SSL) Encryption
+ - PostgreSQL, MySQL and MongoDB Authentication and Authorization
+ - Supports HTTP REST API for Authentication and Authorization
+ -  MQTT message archiver ([Silo](https://github.com/mtsoleimani/silo) integrated in Cassandana) 
+ - Easy configurable (YAML based)
+ - Supports WebSocket
 
 # How to install
 Cassandana is cross-platform, which could be deployed on Linux, FreeBSD, Mac and Windows.
@@ -42,8 +52,8 @@ cp cassandana.yaml /opt/cassandana/cassandana.yaml
 ```
 
 ## Init.d script
-To make Cassandana runs at boot time in Debian use initd script from *script* directory which is provided in source code
-```cp ./script/initd /etc/init.d/cassandana
+To make Cassandana runs at boot time in Debian use initd script from *scripts* directory which is provided in source code
+```cp ./scripts/initd /etc/init.d/cassandana
 chmod 755 /etc/init.d/cassandana
 update-rc.d cassandana defaults
 ```
@@ -96,17 +106,6 @@ cert:
     client_auth: no
 ``` 
 
-Authentication and Authorization could be configured as below:
-```
-security:
-    authentication: database|permit|deny
-    acl: database|permit|deny      
-```
-permit: permit all users to perform a task
-deny: deny all users to perform a task
-database: use database to ask
-
-
 ```allow_anonymous: yes```
 **no** to accept only client connections with credentials and **yes** to accept client connection without credentials, validating only the one that provides.
 
@@ -135,6 +134,72 @@ tcp:
     timeout_seconds: 10
 ```
 
+To archive MQTT message use following configuration:
+```
+silo:
+    enabled: no
+    interval: 30
+    count: 100
+```
+Silo is an open source tool to archive MQTT messages. Silo store all messages in bulk mode. 
+To enable archiving MQTT messge set enabled to ``yes`` default value is ``no``.
+``interval`` in second means how many seconds it should wait to store flight-messages in queues
+``count`` means on how many messages count, messages phase should run.
+
+**Note:** Scripts for making table in MySQL and PosgreSQL can be found in *scripts* directory
+
+# Authentication and Authorization
+Cassandana uses several methods to authenticate and authorize the users:
+```
+security:
+    authentication: database|permit|deny
+    acl: database|permit|deny|http    
+    # if REST API will be used as auth/acl backend
+    auth_url: http://127.0.0.1:9999/mqtt/auth 
+    acl_url: http://127.0.0.1:9999/mqtt/acl  
+```
+
+ - Database (MySQL, PostgreSQL and MongoDB)
+ - Permit All 
+ - Deny All
+ - HTTP REST API
+
+**Note:** Scripts for making tables in MySQL and PosgreSQL can be found    in *scripts* directory
+
+## HTTP Authentication and Authorization
+HTTP-based authentication can be performed as below:
+```
+Authentication: http://HOST:PORT/mqtt/auth 
+Method: POST 
+Content: JSON
+
+Sample body:
+{
+	"username": "MY_USERNAME",
+	"password": "MY_PASSWORD"
+}
+
+Returns 2xx if successful 
+```
+
+HTTP-based authorization can be performed as below:
+```
+Authorization: http://HOST:PORT/mqtt/acl 
+Method: POST 
+Content: JSON
+
+Sample body:
+{
+	"username": "MY_USERNAME",
+	"clientId": "CLIENT_ID",
+	"topic": "TOPIC_NAME ",
+	"acl": "pub"
+}
+
+Returns 2xx if successful 
+```
+if asks for publishing ``acl`` should be set ``pub`` otherwise in case of subscription set it to ``sub``
+**Note:** There is a sample HTTP server written in NodeJS in *example* directory.
 
 # The origin of the name
 [Cassandana](https://en.wikipedia.org/wiki/Cassandane) was an Achaemenian Persian noblewoman and the "dearly loved" wife of Cyrus the Great. Her daughter Atossa later played an important role in the Achaemenid royal family, as she married Darius the Great and bore him the next Achaemenid king, Xerxes I.

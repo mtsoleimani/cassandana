@@ -120,7 +120,7 @@ public final class BrokerInterceptor implements Interceptor {
 
         executor.execute(() -> {
                 try {
-                    int messageId = msg.variableHeader().messageId();
+                    int messageId = msg.variableHeader().packetId();//messageId();
                     String topic = msg.variableHeader().topicName();
                     for (InterceptHandler handler : handlers.get(InterceptPublishMessage.class)) {
                         LOG.debug("Notifying MQTT PUBLISH message to interceptor. CId={}, messageId={}, topic={}, "

@@ -7,8 +7,6 @@
  *
  *  http://www.apache.org/licenses/LICENSE-2.0
  */
-
-
 package io.cassandana.broker.security;
 
 public class RejectAllAuthenticator implements IAuthenticator {

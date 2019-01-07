@@ -12,6 +12,7 @@ package io.cassandana.database;
 
 import static com.mongodb.client.model.Filters.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +34,9 @@ import com.mongodb.event.ServerHeartbeatStartedEvent;
 import com.mongodb.event.ServerHeartbeatSucceededEvent;
 import com.mongodb.event.ServerMonitorListener;
 
+import io.cassandana.Constants;
 import io.cassandana.broker.security.AclEntity;
+import io.cassandana.silo.SiloMessage;
 
 
 
@@ -81,6 +84,7 @@ public class MongodbHelper extends DatabaseHelper implements ServerMonitorListen
 
 	private MongoCollection<Document> userCollection;
 	private MongoCollection<Document> aclCollection;
+	private MongoCollection<Document> siloCollection;
 	
 	protected IDbmsConnectionStatus mIDbmsConnectionStatus;
 	protected void setConnectionStatusListener(IDbmsConnectionStatus listener) {
@@ -120,6 +124,7 @@ public class MongodbHelper extends DatabaseHelper implements ServerMonitorListen
 	public void onConnected() {
 		userCollection = database.getCollection("users");
 		aclCollection = database.getCollection("acl");
+		siloCollection = database.getCollection("silo");
 	}
 
 
@@ -206,6 +211,37 @@ public class MongodbHelper extends DatabaseHelper implements ServerMonitorListen
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
+	@Override
+	public void bulkInsert(List<SiloMessage> list) {
+		if(list == null || list.size() == 0)
+			return;
+		
+		if(list.size() == 1) {
+			Document document = new Document();
+			document.put(Constants.TOPIC, list.get(0).topic);
+			document.put(Constants.USERNAME, list.get(0).username);
+			document.put(Constants.QOS, list.get(0).qos);
+			document.put(Constants.MESSAGE, list.get(0).payload);
+			document.put(Constants.CREATED, list.get(0).receivedAt);
+			siloCollection.insertOne(document);
+			return;
+		}
+		
+		List<Document> documents = new ArrayList<>();
+		for(SiloMessage entry: list) {
+			Document document = new Document();
+			document.put(Constants.TOPIC, entry.topic);
+			document.put(Constants.USERNAME, entry.username);
+			document.put(Constants.QOS, entry.qos);
+			document.put(Constants.MESSAGE, entry.payload);
+			document.put(Constants.CREATED, entry.receivedAt);
+			documents.add(document);
+		}
+		siloCollection.insertMany(documents);
+	}
+
 
 
 
