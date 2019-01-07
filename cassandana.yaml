@@ -69,7 +69,7 @@ reauthorize_subscriptions_on_connect: yes
 max_message_bytes: 8092
 
 
-# engine can be mysql, postgres or monogdb
+# engine can be mysql, postgres or mongodb
 database:
     engine: mongodb
     host: 127.0.0.1
