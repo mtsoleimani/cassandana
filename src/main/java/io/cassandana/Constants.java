@@ -12,6 +12,8 @@ package io.cassandana;
 
 public class Constants {
 
+	public static final String LOCAL_HOST = "127.0.0.1";
+	
 	public static final String ALL_HOSTS = "0.0.0.0";
 
 	public static final int DEFAULT_MQTT_PORT = 1883;
@@ -27,6 +29,8 @@ public class Constants {
 	public static final int DEFAULT_HTTP_PORT = 8083;
 
 	public static final int DEFAULT_MAX_BYTES_IN_MESSAGE = 8092;
+	
+	public static final int DEFAULT_REDIS_PORT = 6379;
 
 	public static final String JDK = "JDK";
 
@@ -124,5 +128,7 @@ public class Constants {
 	
 	public static final int DEFAULT_SILO_COUNT = 100;
 	public static final int DEFAULT_SILO_INTERVAL = 5;
+	
+	public static final String REDIS = "redis";
 
 }

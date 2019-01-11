@@ -15,5 +15,6 @@ public enum SecurityProvider {
 	PERMIT,
 	DENY,
 	DATABASE,
-	HTTP
+	HTTP,
+	REDIS
 }

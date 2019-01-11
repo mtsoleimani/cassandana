@@ -11,7 +11,7 @@ port: 1883
 
     
 websocket:
-    enabled: yes  
+    enabled: no  
     host: 0.0.0.0  
     port: 8080
 
@@ -43,9 +43,10 @@ cert:
 # deny: deny all users to perform a task
 # database: use database to ask
 # http: use http rest api to ask
+# redis: use Redis rest api to ask can be used only for authentication
 security:
-    authentication: http
-    acl: http
+    authentication: redis
+    acl: permit
     
     # if REST API will be used as auth/acl backend
     auth_url: http://127.0.0.1:9999/mqtt/auth 
@@ -78,6 +79,14 @@ database:
     password: 
     name: cassandana
 
+
+
+# Redis connection info will be used if you enable Redis-based authentication
+redis:
+    host: 127.0.0.1
+    port: 6379
+    password: 
+    
 
 
 epoll_enabled: no

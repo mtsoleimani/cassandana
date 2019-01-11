@@ -47,7 +47,7 @@ public class Server {
     public static void main(String[] args) throws Exception {
         final Server server = new Server();
         server.startServer();
-        System.out.println("Server started, version 0.0.2-ALPHA");
+        System.out.println("Server started, version 0.0.3-ALPHA");
         //Bind a shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(server::stopServer));
     }
@@ -162,6 +162,8 @@ public class Server {
         	return new DatabaseAuthenticator(conf);
         else if(conf.authProvider == SecurityProvider.HTTP)
         	return new HttpAuthenticator(conf);
+        else if(conf.authProvider == SecurityProvider.REDIS)
+        	return new RedisAuthenticator(conf);
         else //if(conf.aclProvider == SecurityProvider.PERMIT)
         	return new AcceptAllAuthenticator();
         
