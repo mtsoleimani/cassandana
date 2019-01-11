@@ -1,4 +1,4 @@
-# Cassandana
+# Cassandana :: MQTT Message Broker 
 Cassandana is an open source MQTT message broker which is entirely written in Java. This project began its life as a fork of [Moquette](https://github.com/andsel/moquette) , and later underwent some cleanup, optimization and adding extra features. Now it’s ready to work as an enterprise message broker.
 
 
@@ -202,5 +202,5 @@ if asks for publishing ``acl`` should be set to ``pub`` otherwise in case of sub
 **Note:** There is a sample HTTP server written in NodeJS in *example* directory.
 
 # The origin of the name
-[Cassandana](https://en.wikipedia.org/wiki/Cassandane) was an Achaemenian Persian noblewoman and the "dearly loved" wife of Cyrus the Great. Her daughter Atossa later played an important role in the Achaemenid royal family, as she married Darius the Great and bore him the next Achaemenid king, Xerxes I.
+Cassandana was an Achaemenian Persian noblewoman and the "dearly loved" wife of Cyrus the Great. Her daughter Atossa later played an important role in the Achaemenid royal family, as she married Darius the Great and bore him the next Achaemenid king, Xerxes I. ([wikipedia](https://en.wikipedia.org/wiki/Cassandane) )
 
