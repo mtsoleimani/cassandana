@@ -168,6 +168,7 @@ security:
  - Redis (In memory key-value database)
 
 **Note:** Redis can be used just for authentication
+
 **Note:** Scripts for making tables in MySQL and PosgreSQL can be found    in *scripts* directory
 
 ## HTTP Authentication and Authorization
@@ -203,6 +204,7 @@ Sample body:
 Returns 2xx if successful 
 ```
 if asks for publishing ``acl`` should be set to ``pub`` otherwise in case of subscription set it to ``sub``
+
 **Note:** There is a sample HTTP server written in NodeJS in *example* directory.
 
 ## Redis-Based Authentication
