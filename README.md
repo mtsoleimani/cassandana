@@ -150,6 +150,7 @@ To enable archiving MQTT messge set enabled to ``yes`` default value is ``no``.
 
 # Authentication and Authorization
 Cassandana uses several methods to authenticate and authorize the users:
+
 ```
 security:
     authentication: database|permit|deny
