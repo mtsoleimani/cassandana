@@ -1,4 +1,4 @@
-# Cassandana :: MQTT Message Broker 
+# Cassandana
 Cassandana is an open source MQTT message broker which is entirely written in Java. This project began its life as a fork of [Moquette](https://github.com/andsel/moquette) , and later underwent some cleanup, optimization and adding extra features. Now it’s ready to work as an enterprise message broker.
 
 
