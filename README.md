@@ -1,3 +1,4 @@
+
 # Cassandana
 Cassandana is an open source MQTT message broker which is entirely written in Java. This project began its life as a fork of [Moquette](https://github.com/andsel/moquette) , and later underwent some cleanup, optimization and adding extra features. Now it’s ready to work as an enterprise message broker.
 
@@ -9,6 +10,7 @@ Cassandana is an open source MQTT message broker which is entirely written in Ja
  - TLS (SSL) Encryption
  - PostgreSQL, MySQL and MongoDB Authentication and Authorization
  - Supports HTTP REST API for Authentication and Authorization
+ - Supports Redis for Authentication
  -  MQTT message archiver ([Silo](https://github.com/mtsoleimani/silo) integrated in Cassandana) 
  - Easy configurable (YAML based)
  - Supports WebSocket
@@ -150,10 +152,9 @@ To enable archiving MQTT messge set enabled to ``yes`` default value is ``no``.
 
 # Authentication and Authorization
 Cassandana uses several methods to authenticate and authorize the users:
-
 ```
 security:
-    authentication: database|permit|deny
+    authentication: database|permit|deny|redis
     acl: database|permit|deny|http    
     # if REST API will be used as auth/acl backend
     auth_url: http://127.0.0.1:9999/mqtt/auth 
@@ -164,7 +165,9 @@ security:
  - Permit All 
  - Deny All
  - HTTP REST API
+ - Redis (In memory key-value database)
 
+**Note:** Redis can be used just for authentication
 **Note:** Scripts for making tables in MySQL and PosgreSQL can be found    in *scripts* directory
 
 ## HTTP Authentication and Authorization
@@ -201,6 +204,16 @@ Returns 2xx if successful
 ```
 if asks for publishing ``acl`` should be set to ``pub`` otherwise in case of subscription set it to ``sub``
 **Note:** There is a sample HTTP server written in NodeJS in *example* directory.
+
+## Redis-Based Authentication
+Authentication can be performed by Redis as a backend to store username and password. Password should be hashed with sha256. To configuring Redis connection use the below parameters:
+```
+redis:
+    host: REDI_HOST
+    port: REDIS_PORT
+    password: LEAVE_IT_EMPTY_IF_NOT_PROVIDED
+```
+
 
 # The origin of the name
 Cassandana was an Achaemenian Persian noblewoman and the "dearly loved" wife of Cyrus the Great. Her daughter Atossa later played an important role in the Achaemenid royal family, as she married Darius the Great and bore him the next Achaemenid king, Xerxes I. ([wikipedia](https://en.wikipedia.org/wiki/Cassandane) )
