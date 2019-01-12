@@ -12,13 +12,21 @@ package io.cassandana.broker.security;
 public class AclEntity {
 
 	public String username;
-	
+
 	public String clientId;
-	
+
 	public String topic;
-	
+
 	public boolean canPublish = true;
-	
+
 	public boolean canSubscribe = true;
-	
+
+	public String toString() {
+		return "username: " + username 
+				+ " clientId:" + clientId 
+				+ " topic:" + topic 
+				+ " canPublish:" + canPublish
+				+ " canSubscribe:" + canSubscribe;
+	}
+
 }

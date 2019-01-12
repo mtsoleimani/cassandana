@@ -18,6 +18,8 @@ public enum DatabaseEngine {
 	
 	POSTGRES,
 	
-	MONGODB
+	MONGODB,
+	
+	CASSANDRA
 
 }

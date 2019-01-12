@@ -146,6 +146,8 @@ public class Config {
 					dbEngine = DatabaseEngine.POSTGRES;
 				else if (engine.equalsIgnoreCase(Constants.MONGODB))
 					dbEngine = DatabaseEngine.MONGODB;
+				else if (engine.equalsIgnoreCase(Constants.CASSANDRA))
+					dbEngine = DatabaseEngine.CASSANDRA;
 				else
 					return false;
 
@@ -292,6 +294,24 @@ public class Config {
 
 			Map<String, Object> security = (Map<String, Object>) parser.get(Constants.SECURITY);
 			if (security != null) {
+				
+				Map<String, Object> cache = (Map<String, Object>) security.get(Constants.CACHE);
+				if (cache != null) {
+					if (cache.get(Constants.ENABLED) != null)
+						cacheEnabled = (boolean) cache.get(Constants.ENABLED);
+					
+					if (cache.get(Constants.EXPIRATION) != null)
+						cacheExpirationInSeconds = (int) cache.get(Constants.EXPIRATION);
+					
+					if(cacheExpirationInSeconds == 0)
+						cacheEnabled = false;
+					
+				} else {
+					cacheEnabled = true;
+					cacheExpirationInSeconds = Constants.DEFAULT_CACHE_TTL;
+				}
+					
+				
 
 				if (security.get(Constants.AUTHENTICATION) != null) {
 					String tmp = security.get(Constants.AUTHENTICATION).toString();
@@ -342,6 +362,8 @@ public class Config {
 			} else {
 				authProvider = SecurityProvider.PERMIT;
 				aclProvider = SecurityProvider.PERMIT;
+				cacheEnabled = true;
+				cacheExpirationInSeconds = Constants.DEFAULT_CACHE_TTL;
 			}
 
 			Map<String, Object> silo = (Map<String, Object>) parser.get(Constants.SILO);
@@ -424,7 +446,7 @@ public class Config {
 	public int mqttServerPort = Constants.DEFAULT_MQTT_PORT;
 
 	public String dbHost = "127.0.0.1";
-	public int dbPort = 3306;
+	public int dbPort = 0;
 	public String dbUsername;
 	public String dbPassword;
 	public String dbName;
@@ -488,4 +510,11 @@ public class Config {
 	public int redisPort = Constants.DEFAULT_REDIS_PORT;
 	public String redisPassword = null;
 
+	
+	
+	public int cacheTtl = Constants.DEFAULT_CACHE_TTL;
+	
+	
+	public boolean cacheEnabled = true;
+	public int cacheExpirationInSeconds = Constants.DEFAULT_CACHE_TTL;
 }

@@ -21,18 +21,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.cassandana.Constants;
+import io.cassandana.broker.Utils;
 import io.cassandana.broker.config.Config;
+import io.cassandana.broker.security.cache.AuthenticationCache;
 
 public class HttpAuthenticator implements IAuthenticator {
 	private static final Logger LOG = LoggerFactory.getLogger(HttpAuthenticator.class);
 	
+	private AuthenticationCache cache;
+	
 	private Config conf;
 	public HttpAuthenticator(Config conf) {
 		this.conf = conf;
+		cache = AuthenticationCache.getInstance(conf);
 	}
 
     @Override
     public boolean checkValid(String clientId, String username, byte[] password) {
+    	String passwordString = new String(password, StandardCharsets.UTF_8);
+    	String hashedPassword = Utils.getSha256(password);
+    	
+    	String secret = cache.get(username);
+    	if(secret != null) {
+    		if(secret.equals(hashedPassword))
+    			return true;
+    		return false;
+    	}
     	
     	HttpURLConnection connection = null;
     	boolean isValid = false;
@@ -40,7 +54,7 @@ public class HttpAuthenticator implements IAuthenticator {
     	try {
     		JSONObject json = new JSONObject();
     		json.put(Constants.USERNAME, username);
-    		json.put(Constants.PASSWORD, new String(password, StandardCharsets.UTF_8));
+    		json.put(Constants.PASSWORD, passwordString);
     		String payload = json.toString();
     		
     		connection = (HttpURLConnection) new URL(conf.authenticationHttpUrl).openConnection();
@@ -56,8 +70,10 @@ public class HttpAuthenticator implements IAuthenticator {
     	    writer.close();
     	    
     	    int statusCode = connection.getResponseCode();
-    	    if(statusCode / 200 == 1) // if response code is 2xx
+    	    if(statusCode / 200 == 1) {// if response code is 2xx
+    	    	cache.put(username, hashedPassword);
     	    	isValid = true;
+    	    }
     	    
     	} catch (Exception e) {
     		e.printStackTrace();

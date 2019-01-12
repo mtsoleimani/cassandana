@@ -9,9 +9,11 @@ Cassandana is an open source MQTT message broker which is entirely written in Ja
  - Supports QoS 0, QoS 1 and QoS 2
  - TLS (SSL) Encryption
  - PostgreSQL, MySQL and MongoDB Authentication and Authorization
+ - Supports Cassandra for Authentication, Authorization and Message Archiving
  - Supports HTTP REST API for Authentication and Authorization
  - Supports Redis for Authentication
- -  MQTT message archiver ([Silo](https://github.com/mtsoleimani/silo) integrated in Cassandana) 
+ - Supports In-memory caching mechanism to reduce I/O operations
+ -  MQTT message archiver ([Silo](https://github.com/mtsoleimani/silo) ported to Cassandana) 
  - Easy configurable (YAML based)
  - Supports WebSocket
 
@@ -117,14 +119,14 @@ cert:
 If you would like to use database to authenticate and authorize users, use the following lines:
 ```
 database:
-    engine: mongodb|mysql|postgres
+    engine: mongodb|mysql|postgres|cassandra
     host: HOST_TO_CONNECT
     port: PORT_NUMBER
     username: 
     password: 
     name: cassandana
 ```
-At this time Cassandana supports only MySQL Server, PostgreSQL and MongoDB. We plan it to support more.
+At this time Cassandana supports only MySQL Server, PostgreSQL , MongoDB and Cassandra. We plan it to support more.
 
 In a case of having more control on server you can use the following configuration for TCP server:
 ```
@@ -161,7 +163,7 @@ security:
     acl_url: http://127.0.0.1:9999/mqtt/acl  
 ```
 
- - Database (MySQL, PostgreSQL and MongoDB)
+ - Database (MySQL, PostgreSQL, MongoDB, Cassandra)
  - Permit All 
  - Deny All
  - HTTP REST API
@@ -169,7 +171,7 @@ security:
 
 **Note:** Redis can be used just for authentication
 
-**Note:** Scripts for making tables in MySQL and PosgreSQL can be found    in *scripts* directory
+**Note:** Scripts for making tables in MySQL , PosgreSQL and Cassandra can be found    in *scripts* directory
 
 ## HTTP Authentication and Authorization
 HTTP-based authentication can be performed as below:
@@ -219,4 +221,5 @@ redis:
 
 # The origin of the name
 Cassandana was an Achaemenian Persian noblewoman and the "dearly loved" wife of Cyrus the Great. Her daughter Atossa later played an important role in the Achaemenid royal family, as she married Darius the Great and bore him the next Achaemenid king, Xerxes I. ([wikipedia](https://en.wikipedia.org/wiki/Cassandane) )
+
 

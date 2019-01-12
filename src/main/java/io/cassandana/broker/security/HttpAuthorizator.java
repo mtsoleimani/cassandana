@@ -19,24 +19,38 @@ import org.slf4j.LoggerFactory;
 
 import io.cassandana.Constants;
 import io.cassandana.broker.config.Config;
+import io.cassandana.broker.security.cache.AuthorizationCache;
+import io.cassandana.broker.security.cache.CacheAclEntry;
 import io.cassandana.broker.subscriptions.Topic;
 
 public class HttpAuthorizator implements IAuthorizatorPolicy {
 	
 private static final Logger LOG = LoggerFactory.getLogger(HttpAuthorizator.class);
 	
+
+	private AuthorizationCache cache;
+
 	private Config conf;
 	public HttpAuthorizator(Config conf) {
 		this.conf = conf;
+		cache = AuthorizationCache.getInstance(conf);
 	}
 
     @Override
     public boolean canWrite(Topic topic, String user, String client) {
+    	CacheAclEntry entry = cache.get(user, client, topic.toString());
+    	if(entry != null && entry.canWrite != null)
+    		return entry.canWrite;
+    	
     	return isValid(topic, user, client, Constants.PUB);
     }
 
     @Override
     public boolean canRead(Topic topic, String user, String client) {
+    	CacheAclEntry entry = cache.get(user, client, topic.toString());
+    	if(entry != null && entry.canRead != null)
+    		return entry.canRead;
+    	
     	return isValid(topic, user, client, Constants.SUB);
     }
     
@@ -65,8 +79,14 @@ private static final Logger LOG = LoggerFactory.getLogger(HttpAuthorizator.class
     	    writer.close();
     	    
     	    int statusCode = connection.getResponseCode();
-    	    if(statusCode / 200 == 1) // if response code is 2xx
+    	    if(statusCode / 200 == 1) { // if response code is 2xx
     	    	isValid = true;
+    	    	if(acl.equalsIgnoreCase(Constants.PUB))
+    	    		cache.updateWritePermission(username, clientId, topic.toString(), true);
+    	    	else if(acl.equalsIgnoreCase(Constants.SUB))
+    	    		cache.updateReadPermission(username, clientId, topic.toString(), true);
+    	    	
+    	    }
     	    
     	} catch (Exception e) {
     		e.printStackTrace();

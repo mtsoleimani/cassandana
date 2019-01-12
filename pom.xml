@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>io.cassandana</groupId>
    <artifactId>cassandana</artifactId>
-   <version>0.0.1-ALPHA</version>
+   <version>0.1.0-ALPHA</version>
    <packaging>jar</packaging>
    <name>Cassandana</name>
    <url>http://maven.apache.org</url>
@@ -102,6 +102,12 @@
           <groupId>io.lettuce</groupId>
           <artifactId>lettuce-core</artifactId>
           <version>5.1.3.RELEASE</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/com.datastax.cassandra/cassandra-driver-core -->
+      <dependency>
+          <groupId>com.datastax.cassandra</groupId>
+          <artifactId>cassandra-driver-core</artifactId>
+          <version>3.6.0</version>
       </dependency>
    </dependencies>
    <build>

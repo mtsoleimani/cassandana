@@ -39,15 +39,22 @@ cert:
     
 
 
-# permit: permit all users to perform a task
-# deny: deny all users to perform a task
+
+# permit: permit all users
+# deny: deny all users
 # database: use database to ask
 # http: use http rest api to ask
 # redis: use Redis rest api to ask can be used only for authentication
+# cache : in-memory cache for authentication and authorization to prevent performance degradation
+# expiration in seconds, default value is 3600 seconds (One hour) if set to zero, caching will be disabled. 
 security:
-    authentication: redis
+    authentication: permit
     acl: permit
     
+    cache:
+        enabled: yes
+        expiration: 3600
+
     # if REST API will be used as auth/acl backend
     auth_url: http://127.0.0.1:9999/mqtt/auth 
     acl_url: http://127.0.0.1:9999/mqtt/acl
@@ -70,7 +77,7 @@ reauthorize_subscriptions_on_connect: yes
 max_message_bytes: 8092
 
 
-# engine can be mysql, postgres or monogdb
+# engine can be mysql, postgres, monogdb or cassandra
 database:
     engine: mongodb
     host: 127.0.0.1

@@ -1,11 +1,17 @@
+Version 0.0.4-ALPHA:
+	Added Cassandra support for authentication, authorization and archiving messages
+	Added in-memory cache for authentication and authorization to prevent performance degradation
+	Username and ClientId added to subscription tree
+
 Version 0.0.3-ALPHA:
 	Added Redis as a backend for authentication
+
 
 Version 0.0.2-ALPHA:
 	Added HTTP authentication and authorization
 	Integrated Silo (MQTT Message archiver) (https://github.com/mtsoleimani/silo)
-	
 
+	
 Version 0.0.1-ALPHA:
 	Forked from moquette and code cleanup
 	Dropped support for H2

@@ -31,7 +31,21 @@ public class Constants {
 	public static final int DEFAULT_MAX_BYTES_IN_MESSAGE = 8092;
 	
 	public static final int DEFAULT_REDIS_PORT = 6379;
-
+	
+	public static final int DEFAULT_MYSQL_PORT = 3306;
+	
+	public static final int DEFAULT_POSTGRES_PORT = 5432;
+	
+	public static final int DEFAULT_MONGODB_PORT = 27017;
+	
+	public static final int DEFAULT_CASSANDRA_PORT = 9042;
+	
+	public static final int DEFAULT_CACHE_TTL = 3600;
+	
+	public static final int SECOND_IN_MILLIS = 1000;
+	
+	public static final String DEFAULT_DATABASE_NAME = "cassandana";
+	
 	public static final String JDK = "JDK";
 
 	public static final String JKS = "jks";
@@ -65,7 +79,9 @@ public class Constants {
 	public static final String POSTGRES = "postgres";
 
 	public static final String MONGODB = "mongodb";
-
+	
+	public static final String CASSANDRA = "cassandra";
+	
 	public static final String NAME = "name";
 
 	public static final String DATABASE = "database";
@@ -111,6 +127,8 @@ public class Constants {
 	public static final String AUTH_URL = "auth_url";
 	public static final String ACL_URL = "acl_url";
 	
+	public static final String ID = "id";
+	
 	public static final String TOPIC = "topic";
 	public static final String CLIENT_ID = "clientId";
 	
@@ -130,5 +148,10 @@ public class Constants {
 	public static final int DEFAULT_SILO_INTERVAL = 5;
 	
 	public static final String REDIS = "redis";
+	
+	public static final String EXPIRATION = "expiration";
+	public static final String CACHE = "cache";
+	
+	
 
 }

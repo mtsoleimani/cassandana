@@ -33,7 +33,6 @@ import static io.netty.handler.codec.mqtt.MqttQoS.*;
 
 class PostOffice {
 
-	
 	private Silo silo;
 	
     private static final Logger LOG = LoggerFactory.getLogger(PostOffice.class);
@@ -75,7 +74,7 @@ class PostOffice {
             .filter(req -> req.qualityOfService() != FAILURE)
             .map(req -> {
                 final Topic topic = new Topic(req.topicName());
-                return new Subscription(clientID, topic, req.qualityOfService());
+                return new Subscription(username, clientID, topic, req.qualityOfService());
             }).collect(Collectors.toList());
 
         for (Subscription subscription : newSubscriptions) {
@@ -224,8 +223,7 @@ class PostOffice {
             if (isSessionPresent) {
                 LOG.debug("Sending PUBLISH message to active subscriber CId: {}, topicFilter: {}, qos: {}",
                           sub.getClientId(), sub.getTopicFilter(), qos);
-                //TODO determine the user bounded to targetSession
-                if (!authorizator.canRead(topic, "TODO", sub.getClientId())) {
+                if (!authorizator.canRead(topic, sub.getUsername(), sub.getClientId())) {
                     LOG.debug("Authorizator prohibit Client {} to be notified on {}", sub.getClientId(), topic);
                     return;
                 }
