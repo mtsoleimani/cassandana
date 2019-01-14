@@ -1,4 +1,7 @@
-Version 0.0.4-ALPHA:
+Version 0.1.1-ALPHA:
+	Fixed issue #443 of moquette
+
+Version 0.1.0-ALPHA:
 	Added Cassandra support for authentication, authorization and archiving messages
 	Added in-memory cache for authentication and authorization to prevent performance degradation
 	Username and ClientId added to subscription tree

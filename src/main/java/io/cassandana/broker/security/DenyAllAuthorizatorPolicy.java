@@ -15,11 +15,11 @@ public class DenyAllAuthorizatorPolicy implements IAuthorizatorPolicy {
 
     @Override
     public boolean canWrite(Topic topic, String user, String client) {
-        return true;
+        return false;
     }
 
     @Override
     public boolean canRead(Topic topic, String user, String client) {
-        return true;
+        return false;
     }
 }

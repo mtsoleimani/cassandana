@@ -47,7 +47,7 @@ public class Server {
     public static void main(String[] args) throws Exception {
         final Server server = new Server();
         server.startServer();
-        System.out.println("Server started, version 0.1.0-ALPHA");
+        System.out.println("Server started, version 0.1.1-ALPHA");
         //Bind a shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(server::stopServer));
     }
