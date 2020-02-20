@@ -47,6 +47,9 @@ public class NewNettyMQTTHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object message) throws Exception {
         MqttMessage msg = (MqttMessage) message;
         if (msg.fixedHeader() == null) {
+            if (msg.decoderResult() != null) {
+                throw new IOException(msg.decoderResult().cause());
+            }
             throw new IOException("Unknown packet");
         }
         final MQTTConnection mqttConnection = mqttConnection(ctx.channel());
