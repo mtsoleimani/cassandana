@@ -3,158 +3,213 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>io.cassandana</groupId>
    <artifactId>cassandana</artifactId>
-   <version>0.1.0-ALPHA</version>
+   <version>0.1.2-ALPHA</version>
    <packaging>jar</packaging>
-   <name>Cassandana</name>
+   <name>cassandana</name>
    <url>http://maven.apache.org</url>
-   <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <maven.compiler.target>1.8</maven.compiler.target>
-      <maven.compiler.source>1.8</maven.compiler.source>
-   </properties>
-   <dependencies>
-      <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
-      <dependency>
-         <groupId>org.mongodb</groupId>
-         <artifactId>mongo-java-driver</artifactId>
-         <version>3.4.2</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-core -->
-      <dependency>
-         <groupId>org.mongodb</groupId>
-         <artifactId>mongodb-driver-core</artifactId>
-         <version>3.4.2</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
-      <dependency>
-         <groupId>org.yaml</groupId>
-         <artifactId>snakeyaml</artifactId>
-         <version>1.23</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-      <dependency>
-         <groupId>mysql</groupId>
-         <artifactId>mysql-connector-java</artifactId>
-         <version>8.0.12</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-      <dependency>
-         <groupId>org.postgresql</groupId>
-         <artifactId>postgresql</artifactId>
-         <version>42.2.5</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/com.librato.metrics/metrics-librato -->
-      <dependency>
-         <groupId>com.librato.metrics</groupId>
-         <artifactId>metrics-librato</artifactId>
-         <version>5.1.0</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/io.dropwizard.metrics/metrics-jvm -->
-      <dependency>
-         <groupId>io.dropwizard.metrics</groupId>
-         <artifactId>metrics-jvm</artifactId>
-         <version>3.2.2</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/com.bugsnag/bugsnag -->
-      <dependency>
-         <groupId>com.bugsnag</groupId>
-         <artifactId>bugsnag</artifactId>
-         <version>3.4.2</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
-      <dependency>
-         <groupId>org.apache.logging.log4j</groupId>
-         <artifactId>log4j-api</artifactId>
-         <version>2.11.0</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-      <dependency>
-         <groupId>org.apache.logging.log4j</groupId>
-         <artifactId>log4j-core</artifactId>
-         <version>2.11.1</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
-      <dependency>
-         <groupId>org.apache.logging.log4j</groupId>
-         <artifactId>log4j-slf4j-impl</artifactId>
-         <version>2.11.1</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
-      <dependency>
-         <groupId>io.netty</groupId>
-         <artifactId>netty-all</artifactId>
-         <version>4.1.22.Final</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/io.netty/netty-codec-mqtt -->
-      <dependency>
-         <groupId>io.netty</groupId>
-         <artifactId>netty-codec-mqtt</artifactId>
-         <version>4.1.22.Final</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/org.json/json -->
-      <dependency>
-         <groupId>org.json</groupId>
-         <artifactId>json</artifactId>
-         <version>20180813</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/io.lettuce/lettuce-core -->
-      <dependency>
-          <groupId>io.lettuce</groupId>
-          <artifactId>lettuce-core</artifactId>
-          <version>5.1.3.RELEASE</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/com.datastax.cassandra/cassandra-driver-core -->
-      <dependency>
-          <groupId>com.datastax.cassandra</groupId>
-          <artifactId>cassandra-driver-core</artifactId>
-          <version>3.6.0</version>
-      </dependency>
-   </dependencies>
+   
+   
+   
+	<properties>
+		<main.class>io.cassandana.broker.Server</main.class>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>13</maven.compiler.source>
+		<maven.compiler.target>13</maven.compiler.target>
+		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
+		<exec.maven.plugin.version>1.3.2</exec.maven.plugin.version>
+		<junit.version>3.8.1</junit.version>
+		
+		<io.netty.version>4.1.89.Final</io.netty.version>
+		<mongodb-driver-sync-version>4.9.0</mongodb-driver-sync-version>
+		<snakeyaml-version>2.0</snakeyaml-version>
+		<mysql-connector-java-version>8.0.32</mysql-connector-java-version>
+		<postgresql-version>42.5.4</postgresql-version>
+		<org.json.version>20230227</org.json.version>
+		<io.lettuce-version>6.2.3.RELEASE</io.lettuce-version>
+		<metrics-librato-version>5.1.4</metrics-librato-version>
+		<metrics-jvm-version>4.2.17</metrics-jvm-version>
+		<bugsnag-version>3.6.4</bugsnag-version>
+		<cassandra-driver-core-version>3.11.3</cassandra-driver-core-version>
+		<log4j-version>2.20.0</log4j-version>
+	</properties>
+   
+   
+   
+	<dependencies>
+		
+		<!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>${io.netty.version}</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-sync -->
+		<dependency>
+		    <groupId>org.mongodb</groupId>
+		    <artifactId>mongodb-driver-sync</artifactId>
+		    <version>${mongodb-driver-sync-version}</version>
+		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>${snakeyaml-version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql-connector-java-version}</version>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${postgresql-version}</version>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/io.netty/netty-codec-mqtt -->
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-codec-mqtt</artifactId>
+			<version>${io.netty.version}</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${org.json.version}</version>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/io.lettuce/lettuce-core -->
+		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+			<version>${io.lettuce-version}</version>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/com.librato.metrics/metrics-librato -->
+		<dependency>
+			<groupId>com.librato.metrics</groupId>
+			<artifactId>metrics-librato</artifactId>
+			<version>${metrics-librato-version}</version>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/io.dropwizard.metrics/metrics-jvm -->
+		<dependency>
+			<groupId>io.dropwizard.metrics</groupId>
+			<artifactId>metrics-jvm</artifactId>
+			<version>${metrics-jvm-version}</version>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/com.bugsnag/bugsnag -->
+		<dependency>
+			<groupId>com.bugsnag</groupId>
+			<artifactId>bugsnag</artifactId>
+			<version>${bugsnag-version}</version>
+		</dependency>
+
+				
+		<!-- https://mvnrepository.com/artifact/com.datastax.cassandra/cassandra-driver-core -->
+		<dependency>
+		    <groupId>com.datastax.cassandra</groupId>
+		    <artifactId>cassandra-driver-core</artifactId>
+		    <version>${cassandra-driver-core-version}</version>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+		<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-api</artifactId>
+		    <version>${log4j-version}</version>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+		<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-core</artifactId>
+		    <version>${log4j-version}</version>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
+		<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-slf4j-impl</artifactId>
+		    <version>${log4j-version}</version>
+		    <scope>test</scope>
+		</dependency>
+
+		
+		
+		
+	</dependencies>
+   
+   
    <build>
-      <finalName>cassandana</finalName>
-      <plugins>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-eclipse-plugin</artifactId>
-            <version>2.9</version>
-            <configuration>
-               <downloadSources>true</downloadSources>
-               <downloadJavadocs>false</downloadJavadocs>
-            </configuration>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>2.3.2</version>
-            <configuration>
-               <source>1.8</source>
-               <target>1.8</target>
-            </configuration>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>2.4.1</version>
-            <configuration>
-               <descriptorRefs>
-                  <descriptorRef>jar-with-dependencies</descriptorRef>
-               </descriptorRefs>
-               <archive>
-                  <manifest>
-                     <mainClass>io.cassandana.broker.Server</mainClass>
-                  </manifest>
-               </archive>
-            </configuration>
-            <executions>
-               <execution>
-                  <id>make-assembly</id>
-                  <phase>package</phase>
-                  <goals>
-                     <goal>single</goal>
-                  </goals>
-               </execution>
-            </executions>
-         </plugin>
-      </plugins>
-   </build>
+		<finalName>${project.name}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>libs/</classpathPrefix>
+							<mainClass>${main.class}</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<!-- copy project dependencies -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.2</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<!-- exclude junit, we need runtime dependency only -->
+							<includeScope>runtime</includeScope>
+							<outputDirectory>${project.build.directory}/libs/</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+	
 </project>

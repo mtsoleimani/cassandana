@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ -d libs ]; then rm -Rf libs; fi
+if [ -d target ]; then rm -Rf target; fi
+if [ -f cassandana.jar ]; then rm cassandana.jar; fi
+
+mvn install
+
+cp -fr target/cassandana.jar  ./
+cp -fr target/libs  ./

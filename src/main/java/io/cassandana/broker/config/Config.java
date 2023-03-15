@@ -25,9 +25,9 @@ public class Config {
 
 	private final String confFilePath = "./cassandana.yaml";
 
-	private static Config instance;
+	private volatile static Config instance;
 
-	public static Config getInstance() throws Exception {
+	public synchronized static Config getInstance() throws Exception {
 		if (instance == null)
 			instance = new Config();
 		return instance;

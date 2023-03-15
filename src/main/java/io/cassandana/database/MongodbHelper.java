@@ -13,7 +13,6 @@ package io.cassandana.database;
 import static com.mongodb.client.model.Filters.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -21,11 +20,11 @@ import java.util.logging.Logger;
 
 import org.bson.Document;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -92,26 +91,22 @@ public class MongodbHelper extends DatabaseHelper implements ServerMonitorListen
 	}
 
 	public synchronized void tryConnecting() {
-		MongoClientOptions clientOptions = new MongoClientOptions.Builder()
-			.addServerMonitorListener(this)
-			.connectionsPerHost(dbPoolSize)
-			.build();
-
-		if(dbUsername != null && dbPassword != null) {
-			MongoCredential credential = MongoCredential.createCredential(
-					dbUsername, dbName,
-					dbPassword.toCharArray());
-
-			mongoClient = new MongoClient(new ServerAddress(host,
-					port),
-					Arrays.asList(credential),
-					clientOptions);
-		} else {
-			mongoClient = new MongoClient(new ServerAddress(
-					host,
-					port),
-					clientOptions);
-		}
+		
+        StringBuilder connStringBuilder = new StringBuilder()
+        		.append("mongodb://");
+        
+        if(dbUsername != null && dbPassword != null)
+        	connStringBuilder.append(dbUsername).append(":").append(dbPassword).append("@");
+        
+        connStringBuilder.append(host).append(":").append(port)
+        	.append("/?retryWrites=true&w=majority").append("&maxPoolSize=").append(dbPoolSize);
+        		
+        
+		MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
+				.applyConnectionString(new ConnectionString(connStringBuilder.toString()))
+				.build();
+		
+		MongoClient mongoClient = MongoClients.create(mongoClientSettings);
 
 		database = mongoClient.getDatabase(dbName);
 		setConnected(true);
@@ -119,7 +114,6 @@ public class MongodbHelper extends DatabaseHelper implements ServerMonitorListen
 		System.out.println("connected to mongodb server: " + host + ":" + port);
 	}
 
-	
 	
 	public void onConnected() {
 		userCollection = database.getCollection("users");
