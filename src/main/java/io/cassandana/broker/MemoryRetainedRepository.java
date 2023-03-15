@@ -51,7 +51,8 @@ final class MemoryRetainedRepository implements IRetainedRepository {
         final List<RetainedMessage> matchingMessages = new ArrayList<>();
         for (Map.Entry<Topic, RetainedMessage> entry : storage.entrySet()) {
             final Topic scanTopic = entry.getKey();
-            if (searchTopic.match(scanTopic)) {
+            //if (searchTopic.match(scanTopic)) {
+            if (scanTopic.match(searchTopic)) {
                 matchingMessages.add(entry.getValue());
             }
         }
