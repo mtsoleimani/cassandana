@@ -29,6 +29,7 @@ import static io.netty.channel.ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE;
 import static io.netty.handler.codec.mqtt.MqttConnectReturnCode.*;
 import static io.netty.handler.codec.mqtt.MqttMessageIdVariableHeader.from;
 import static io.netty.handler.codec.mqtt.MqttQoS.*;
+import java.net.InetSocketAddress;
 
 final class MQTTConnection {
 
@@ -463,6 +464,10 @@ final class MQTTConnection {
 
     int nextPacketId() {
         return lastPacketId.incrementAndGet();
+    }
+    
+    protected InetSocketAddress remoteAddress() {
+        return (InetSocketAddress) channel.remoteAddress();
     }
 
     @Override

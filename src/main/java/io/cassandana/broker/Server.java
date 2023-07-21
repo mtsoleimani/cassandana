@@ -27,6 +27,7 @@ import static io.cassandana.logging.LoggingUtils.getInterceptorIds;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -248,5 +249,13 @@ public class Server {
         }
         LOG.info("Removing MQTT message interceptor. InterceptorId={}", interceptHandler.getID());
         interceptor.removeInterceptHandler(interceptHandler);
+    }
+    
+    /**
+     * Returns data about connected clients 
+     * @return {@code Collection<ClientDescriptor>} List of connected clients
+     */
+    public Collection<ClientDescriptor> listConnectedClients() {
+        return dispatcher.getSessionRegistry().listConnectedClients();
     }
 }
