@@ -309,4 +309,8 @@ class PostOffice {
         }
         retainedRepository.retain(topic, msg);
     }
+    
+    protected SessionRegistry getSessionRegistry() {
+        return sessionRegistry;
+    }
 }

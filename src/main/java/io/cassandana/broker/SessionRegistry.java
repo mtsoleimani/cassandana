@@ -18,12 +18,16 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.mqtt.MqttConnectMessage;
 import io.netty.handler.codec.mqtt.MqttQoS;
+import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 public class SessionRegistry {
 
@@ -228,5 +232,20 @@ public class SessionRegistry {
 
     private void dropQueuesForClient(String clientId) {
         queues.remove(clientId);
+    }
+    
+    protected Collection<ClientDescriptor> listConnectedClients() {
+        return pool.values().stream()
+                .filter(Session::connected)
+                .map(this::createClientDescriptor)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    private Optional<ClientDescriptor> createClientDescriptor(Session s) {
+        final String clientID = s.getClientID();
+        final Optional<InetSocketAddress> remoteAddressOpt = s.remoteAddress();
+        return remoteAddressOpt.map(r -> new ClientDescriptor(clientID, r.getHostString(), r.getPort()));
     }
 }

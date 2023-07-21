@@ -274,6 +274,7 @@ build/
 nbbuild/
 nbdist/
 .nb-gradle/
+nb-configuration.xml
 
 ### Vim ###
 # Swap

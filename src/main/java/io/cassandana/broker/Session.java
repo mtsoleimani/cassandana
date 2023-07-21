@@ -14,6 +14,7 @@ import io.cassandana.broker.subscriptions.Topic;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.mqtt.*;
 import io.netty.util.ReferenceCountUtil;
+import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -354,6 +355,13 @@ class Session {
     public void receivedPubRelQos2(int messageID) {
         final MqttPublishMessage removedMsg = qos2Receiving.remove(messageID);
         ReferenceCountUtil.release(removedMsg);
+    }
+    
+    protected Optional<InetSocketAddress> remoteAddress() {
+        if (connected()) {
+            return Optional.of(mqttConnection.remoteAddress());
+        }
+        return Optional.empty();
     }
 
     @Override
